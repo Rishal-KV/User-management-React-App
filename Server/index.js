@@ -3,7 +3,11 @@ let app = express()
 import userRoute from "./routes/userRoute.js";
 import connection from "./config/mongoose.config.js";
 import cors from 'cors'
+import dotenv from 'dotenv'
+dotenv.config()
 connection()
+
+
 app.use(
   cors({
     origin: ["http://localhost:5173"],

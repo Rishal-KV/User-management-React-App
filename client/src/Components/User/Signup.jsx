@@ -6,15 +6,16 @@ import {
 } from "@material-tailwind/react";
 import { useState } from "react";
 import { signupApi } from "../../Api/UserApi";
+import { useDispatch } from "react-redux";
+import { setUserDetails } from "../../Store/slice/UserSlice";
 
 
 function Signup() {
-
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [number, setNumber] = useState("");
   const [password, setPassword] = useState("");
-
+  const dispatch = useDispatch()
 
 
 
@@ -22,13 +23,28 @@ function Signup() {
     e.preventDefault()
     console.log("hello");
     const userData = await signupApi({name,email,number,password})
+    
+   console.log(userData);
+    if (userData.data.status) {
+       localStorage.setItem('token', userData.data.token)
+       dispatch(setUserDetails({
+        id: userData.data.userData._id,
+        userName: userData.data.userData.name,
+        email: userData.data.userData.email,
+        image: "",
+        mobile: userData.data.userData.number,
+        is_Admin: userData.data.userData.is_Admin,
+       }))
+    }else{
+      console.log("ooppss");
+    }
   }
 
 
 
 
   return (
-    <div className="flex items-center justify-center h-screen">
+    <div className="flex items-center justify-center h-screen bg-white">
 
 
       <Card color="transparent" shadow={false}>

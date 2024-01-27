@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 
-
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -23,9 +22,15 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  is_Admin: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
+  image: {
+    type: String,
+    default: "",
+  },
 });
 
-
 export const User = mongoose.model('User', userSchema);
-
-

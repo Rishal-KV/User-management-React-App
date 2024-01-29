@@ -5,44 +5,26 @@ import {
   Button,
   Typography,
 } from "@material-tailwind/react";
-import { Link, useNavigate } from 'react-router-dom';
-import { loginApi } from '../../Api/UserApi';
-import { useDispatch } from 'react-redux';
-import { setUserDetails } from '../../Store/slice/UserSlice';
+import { login } from '../../Api/AdminApi';
+import { useNavigate } from 'react-router-dom';
 function Login() {
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-  const [email, setEmail] = useState("");
+  
+  
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error,setError] = useState('')
-  const emailPattern =  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
+  let navigate = useNavigate()
   async function handleLogin(e){
     e.preventDefault()
     try {
-      if(!emailPattern.test(email)){
-        return  setError("Invalid email format")
-        }else if(password.length < 4){
-          return setError("Password must contain 4 character")
-        }
-      console.log("eheh");
-      let userData = await loginApi({email, password});
-     console.log(userData);
-      if (userData.data.status) {
-        localStorage.setItem('token',userData.data.token)
-        dispatch(setUserDetails({
-          id:userData.data.userFound._id,
-          userName:userData.data.userFound.name,
-          email:userData.data.userFound.email,
-          is_Admin:userData.data.userFound.is_Admin,
-          image:userData.data.userFound.image,
-          phone:userData.data.userFound.number,
-        }))
-       navigate('/')
-        
+    
+      let   adminData = await login({email,password})
+     console.log(adminData);
+      if (adminData.status) {
+        localStorage.setItem("adminToken",adminData.adminFound.data);
+        navigate('/admin/dashboard')
+
       }else{
-        setError(userData.data.error)
-        
+        console.log("hehe");
       }
     } catch (error) {
       console.log(error.message);
@@ -54,7 +36,7 @@ function Login() {
 
     <Card color="transparent" shadow={false}>
       <Typography variant="h4" color="blue-gray">
-        Login
+       Admin Login
       </Typography>
       
       <form onSubmit={handleLogin}  className="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96">
@@ -91,13 +73,7 @@ function Login() {
         <Button type="submit" className="mt-6" fullWidth>
           Login
         </Button>
-        {error && <span style={{color:"red",justifyContent:"center",alignItems:"center", display:"flex"}}>{error}</span>}
-        <Typography color="gray" className="mt-4 text-center font-normal">
-          New to here ?{" "}
-          <Link to='/signup'  className="font-medium text-gray-900">
-            SignUp
-          </Link>
-        </Typography>
+      
       </form>
     </Card>
   </div>

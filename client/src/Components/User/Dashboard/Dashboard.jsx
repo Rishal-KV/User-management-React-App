@@ -2,6 +2,7 @@ import React from 'react'
 import '../Dashboard/Dashboard.css'
 import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux';
+import NavBar from '../NavBar/NavBar';
 function Dashboard() {
     // const userName = (state) => state.user.userName;
     const username = useSelector((state) => state)
@@ -9,6 +10,7 @@ function Dashboard() {
 
   return (
     <div>
+      <NavBar/>
       <div class="container d-flex justify-content-center align-items-center">
              
              <div className="card">

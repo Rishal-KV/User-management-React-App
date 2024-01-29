@@ -7,7 +7,7 @@ const UserApi = axios.create({
 export const signupApi = async (signupData) => {
     try {
         let data = await UserApi.post('/signup', signupData);
-        return data;
+        return data.data;
     } catch (error) {
         console.log(error.message);
     }
@@ -24,10 +24,11 @@ export const loginApi = async (loginData) => {
 
 export const updateApi = async ({ name, email, phone, image, id }) => {
     try {
+    
         const data = new FormData()
         data.append("id", id)
         data.append("name", name)
-        data.append("emil", email)
+        data.append("email", email)
         data.append("phone", phone)
         data.append("image", image)
         const config = {

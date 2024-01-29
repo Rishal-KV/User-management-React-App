@@ -9,7 +9,7 @@ export const signUp = async (req, res) => {
 
         let user = await User.findOne({ email: email });
         let hashedPass = await bcrypt.hash(password, 10);
-
+console.log("signed");
         if (!user) {
             const newUser = new User({
                 name: name,
@@ -48,7 +48,7 @@ export const login = async (req, res) => {
         if (userFound.email == email) {
             const passMatch = await bcrypt.compare(password, userFound.password)
           
-            if (passMatch) {
+            if (passMatch && userFound.is_Admin != true) {
                
                 const token = Jwt.sign({
                     userId: userFound._id,
@@ -56,6 +56,7 @@ export const login = async (req, res) => {
                 }, process.env.TOKEN_KEY,
                     { expiresIn: "1h" }
                 )
+                console.log(token);
                 res.json({ userFound, token, status: true })
             } else {
                 res.json({ status: false, error: "Incorrect password" })

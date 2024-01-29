@@ -1,6 +1,7 @@
 import  express from "express";
 let app = express()
 import userRoute from "./routes/userRoute.js";
+import adminRoute from './routes/adminRoute.js'
 import connection from "./config/mongoose.config.js";
 import cors from 'cors'
 import dotenv from 'dotenv'
@@ -20,6 +21,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/', userRoute)
+app.use('/admin',adminRoute)
 
 
 

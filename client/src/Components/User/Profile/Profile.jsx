@@ -3,8 +3,13 @@ import { useSelector, useDispatch } from 'react-redux';
 import { updateApi } from '../../../Api/UserApi';
 import { setUserDetails } from '../../../Store/slice/UserSlice';
 import { useNavigate } from 'react-router-dom';
+import NavBar from '../NavBar/NavBar';
 function Profile() {
+    const emailPattern =  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+
     const oldData = useSelector((state) => state.user);
+    console.log(oldData);
     const dispatch = useDispatch();
     const nagivate = useNavigate()
     const initialState = {
@@ -16,11 +21,19 @@ function Profile() {
     };
 
     const [userData, setUserData] = useState(initialState);
+    const [error,setError] = useState("")
 
     function editProfile(e) {
         e.preventDefault();
         updateApi(userData).then((data) => {
-            console.log( data);
+
+            if(!emailPattern.test(userData.email)){
+                return  setError("Invalid email format")
+            }else if(userData.name < 4){
+                return setError("Name must contain 4 character")
+            }else if(userData.phone && userData.phone.length <10){
+                return setError("Phone must contain 10 digits")
+            }
              dispatch(setUserDetails({
                 id : data.data.updatedData.name,
                 name : data.data.updatedData.name,
@@ -35,6 +48,8 @@ function Profile() {
     }
 
     return (
+        <>
+        <NavBar/>
         <div className="container rounded bg-white mt-5 mb-5">
             <div className="row">
                 <div className="col-md-3 border-right">
@@ -100,11 +115,14 @@ function Profile() {
                             <div className="mt-5 text-center">
                                 <button className="btn btn-primary profile-button text-dark" type="submit">Save Profile</button>
                             </div>
+                            {error && <span style={{color:"red",justifyContent:"center",alignItems:"center", display:"flex"}}>{error}</span>}
                         </div>
                     </form>
                 </div>
             </div>
         </div>
+        </>
+        
     );
 }
 

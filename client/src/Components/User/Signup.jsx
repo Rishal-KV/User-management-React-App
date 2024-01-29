@@ -8,35 +8,45 @@ import { useState } from "react";
 import { signupApi } from "../../Api/UserApi";
 import { useDispatch } from "react-redux";
 import { setUserDetails } from "../../Store/slice/UserSlice";
-
+import { useNavigate } from "react-router-dom";
 
 function Signup() {
+  const navigate = useNavigate()
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [number, setNumber] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch()
+  const [error,setError] = useState('')
+  const emailPattern =  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 
 
   async function handleSubmit(e){
     e.preventDefault()
-    console.log("hello");
+    if(name.length < 3){
+      return  setError("Name must contain 3 letters")
+      }else if(!emailPattern.test(email)){
+      return  setError("Invalid email format")
+      }else if(password.length < 4){
+        return setError("Password must contain 4 character")
+      }
     const userData = await signupApi({name,email,number,password})
     
-   console.log(userData);
-    if (userData.data.status) {
-       localStorage.setItem('token', userData.data.token)
+   console.log(userData.userData);
+    if (userData.status) {
+       localStorage.setItem('token', userData.token)
        dispatch(setUserDetails({
-        id: userData.data.userData._id,
-        userName: userData.data.userData.name,
-        email: userData.data.userData.email,
+        id: userData.userData._id,
+        userName: userData.userData.name,
+        email: userData.userData.email,
         image: "",
-        mobile: userData.data.userData.number,
-        is_Admin: userData.data.userData.is_Admin,
+        phone: userData.userData.number,
+        is_Admin: userData.userData.is_Admin,
        }))
+       navigate('/')
     }else{
-      console.log("ooppss");
+      setError(userData.error)
     }
   }
 
@@ -82,7 +92,7 @@ function Signup() {
               Number
             </Typography>
             <Input onChange={(e) => setNumber(e.target.value)}
-              type="password"
+              type="number"
               size="lg"
               placeholder="number"
               className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
@@ -107,9 +117,11 @@ function Signup() {
           <Button type="submit" className="mt-6" fullWidth>
             sign up
           </Button>
+          {error && <span style={{color:"red",justifyContent:"center",alignItems:"center", display:"flex"}}>{error}</span>}
+
           <Typography color="gray" className="mt-4 text-center font-normal">
             Already have an account?{" "}
-            <a href="#" className="font-medium text-gray-900">
+            <a href="/login" className="font-medium text-gray-900">
               Sign In
             </a>
           </Typography>

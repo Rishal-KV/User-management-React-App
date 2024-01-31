@@ -42,13 +42,15 @@ console.log("signed");
 export const login = async (req, res) => {
     try {
         let { email, password } = req.body
+    console.log(email);
         
         let userFound = await User.findOne({ email: email })
+        console.log(userFound);
        
-        if (userFound.email == email) {
+        if (userFound) {
             const passMatch = await bcrypt.compare(password, userFound.password)
           
-            if (passMatch && userFound.is_Admin != true) {
+            if (userFound.email == email && passMatch && userFound.is_Admin != true) {
                
                 const token = Jwt.sign({
                     userId: userFound._id,
@@ -56,13 +58,13 @@ export const login = async (req, res) => {
                 }, process.env.TOKEN_KEY,
                     { expiresIn: "1h" }
                 )
-                console.log(token);
+            
                 res.json({ userFound, token, status: true })
             } else {
                 res.json({ status: false, error: "Incorrect password" })
             }
         } else {
-            res.json({ status: false, error: "Eamil not found" })
+            res.json({ status: false, error: "Email not found" })
         }
     } catch (error) {
         console.log(error.message);

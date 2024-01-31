@@ -1,136 +1,147 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { loadDetails, updateUser } from '../../Api/AdminApi';
+import { Card, Typography, Input, Button } from '@material-tailwind/react';
 
 function EditUser() {
   const { id } = useParams();
+  let navigate = useNavigate();
 
-  const [previewImage, setPreviewImage] = useState(null);
   const [formData, setFormData] = useState({
-    id : id,
+    id: id,
     name: '',
     number: '',
     email: '',
-    
   });
+
+  const [nameError, setNameError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [numberError, setNumberError] = useState('');
 
   useEffect(() => {
     loadDetails(id).then((data) => {
-     
       setFormData({
-        id : data.specificUser._id,
+        id: data.specificUser._id,
         name: data.specificUser.name,
         number: data.specificUser.number,
         email: data.specificUser.email,
-        image : data.specificUser.image
+        image: data.specificUser.image,
       });
     });
   }, [id]);
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-
-    if (file) {
-      setPreviewImage(URL.createObjectURL(file));
-      setFormData((preData) => ({ ...preData, image: file.name }));
-    }
-  };
-
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    
+
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
   };
 
+  const validateName = () => {
+    if (formData.name.trim() === '') {
+      setNameError('Name is required');
+      return false;
+    }
+    setNameError('');
+    return true;
+  };
+
+  const validateEmail = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.email.trim() || !emailRegex.test(formData.email.trim())) {
+      setEmailError('Enter a valid email address');
+      return false;
+    }
+    setEmailError('');
+    return true;
+  };
+
+  const validateNumber = () => {
+    const numberRegex = /^\d+$/;
+    if (!formData.number.trim() || !numberRegex.test(formData.number.trim())) {
+      setNumberError('Enter a valid phone number');
+      return false;
+    }
+    setNumberError('');
+    return true;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    updateUser(formData).then((data)=>{
-        setFormData(data)
-    })
+
+    if (validateName() && validateEmail() && validateNumber()) {
+      updateUser(formData).then((data) => {
+        navigate('/admin/dashboard');
+      });
+    }
   };
 
   return (
-    <div className="container rounded bg-white mt-5 mb-5">
-      <div className="row">
-        <div className="col-md-3 border-right">
-          <div className="d-flex flex-column align-items-center text-center p-3 py-5">
-            <label htmlFor="fileInput">
-              <img
-                className="rounded-circle mt-5"
-                width="150px"
-                src={
-                  previewImage || formData.image
-                    ? previewImage
-                      ? previewImage
-                      : `/public/uploads/${formData.image}`
-                    : "https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg"
-                }
-                alt="Profile"
-              />
-              <span className="text-black-50">Additional Information</span>
-            </label>
-            <input
-              type="file"
-              id="fileInput"
-              style={{ display: 'none' }}
-              onChange={handleFileChange}
+    <div className="flex items-center justify-center h-screen bg-white">
+      <Card color="transparent" shadow={false}>
+        <Typography variant="h4" color="blue-gray">
+          Edit User
+        </Typography>
+        <form onSubmit={handleSubmit} className="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96">
+          <div className="mb-1 flex flex-col gap-6">
+            <Typography variant="h6" color="blue-gray" className="-mb-3">
+              Your Name
+            </Typography>
+            <Input
+              size="lg"
+              placeholder="Enter your name"
+              className={`!border-t-blue-gray-200 focus:!border-t-gray-900 ${nameError && 'border-red-500'}`}
+              labelProps={{
+                className: "before:content-none after:content-none",
+              }}
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              onBlur={validateName}
             />
+            {nameError && <Typography color="red" className="text-xs">{nameError}</Typography>}
+
+            <Typography variant="h6" color="blue-gray" className="-mb-3">
+              Your Email
+            </Typography>
+            <Input
+              size="lg"
+              placeholder="Enter your email"
+              className={`!border-t-blue-gray-200 focus:!border-t-gray-900 ${emailError && 'border-red-500'}`}
+              labelProps={{
+                className: "before:content-none after:content-none",
+              }}
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              onBlur={validateEmail}
+            />
+            {emailError && <Typography color="red" className="text-xs">{emailError}</Typography>}
+
+            <Typography variant="h6" color="blue-gray" className="-mb-3">
+              Number
+            </Typography>
+            <Input
+              size="lg"
+              placeholder="Enter your number"
+              className={`!border-t-blue-gray-200 focus:!border-t-gray-900 ${numberError && 'border-red-500'}`}
+              labelProps={{
+                className: "before:content-none after:content-none",
+              }}
+              name="number"
+              value={formData.number}
+              onChange={handleInputChange}
+              onBlur={validateNumber}
+            />
+            {numberError && <Typography color="red" className="text-xs">{numberError}</Typography>}
           </div>
-        </div>
-        <div className="col-md-5 border-right">
-          <form onSubmit={handleSubmit}>
-            <div className="p-3 py-5">
-              <div className="row mt-2">
-                <div className="col-md-6">
-                  <label className="labels">Name</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="first name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                  />
-                </div>
-              </div>
-              <div className="row mt-3">
-                <div className="col-md-12">
-                  <label className="labels">Mobile Number</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="enter phone number"
-                    name="number"
-                    value={formData.number}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div className="col-md-12">
-                  <label className="labels">Email ID</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="enter email id"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                  />
-                </div>
-              </div>
-           
-              <div className="mt-5 text-center">
-                <button className="btn btn-primary profile-button text-dark" type="submit">
-                  Save Profile
-                </button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
+          <Button className="mt-6" fullWidth type="submit">
+            Update
+          </Button>
+        </form>
+      </Card>
     </div>
   );
 }

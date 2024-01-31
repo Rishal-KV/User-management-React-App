@@ -15,8 +15,9 @@ export const signupApi = async (signupData) => {
 
 export const loginApi = async (loginData) => {
     try {
-        let data = UserApi.post('/login', loginData)
-        return data
+        let data = await UserApi.post('/login', loginData)
+    
+        return data.data
     } catch (error) {
         console.log(error.message);
     }

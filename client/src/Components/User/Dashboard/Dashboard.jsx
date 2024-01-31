@@ -1,12 +1,17 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import '../Dashboard/Dashboard.css'
 import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux';
 import NavBar from '../NavBar/NavBar';
 function Dashboard() {
     // const userName = (state) => state.user.userName;
-    const username = useSelector((state) => state)
-    console.log(username);
+    const username = useSelector((state) => state.user)
+    let [userDetails ,setDetails] = useState({})
+    useEffect(()=>{
+      setDetails(username)
+    },[username])
+    
+    console.log(userDetails);
 
   return (
     <div>
@@ -25,7 +30,7 @@ function Dashboard() {
 
                 <div class="profile">
 
-                  <img src="https://i.imgur.com/JgYD2nQ.jpg" class="rounded-circle" width="80"/>
+                  <img src={userDetails.image ? `public/uploads/${userDetails.image}` : "https://img.freepik.com/premium-photo/cartoon-game-avatar-logo-gaming-brand_902820-465.jpg"} class="rounded-circle" width="80"/>
                   
                 </div>
 
@@ -34,7 +39,7 @@ function Dashboard() {
 
               <div class="mt-5 text-center">
 
-                <h4 class="mb-0">{username.user.email}</h4>
+                <h4 class="mb-0">{userDetails.email}</h4>
 
 
               <Link to="/editprofile"> <button class="btn btn-primary btn-sm follow">edit profile</button></Link> 

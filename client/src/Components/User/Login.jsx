@@ -28,20 +28,21 @@ function Login() {
       console.log("eheh");
       let userData = await loginApi({email, password});
      console.log(userData);
-      if (userData.data.status) {
-        localStorage.setItem('token',userData.data.token)
+      if (userData.status) {
+        localStorage.setItem('token',userData.token)
+       
         dispatch(setUserDetails({
-          id:userData.data.userFound._id,
-          userName:userData.data.userFound.name,
-          email:userData.data.userFound.email,
-          is_Admin:userData.data.userFound.is_Admin,
-          image:userData.data.userFound.image,
-          phone:userData.data.userFound.number,
+          id:userData.userFound._id,
+          userName:userData.userFound.name,
+          email:userData.userFound.email,
+          is_Admin:userData.userFound.is_Admin,
+          image:userData.userFound.image,
+          phone:userData.userFound.number,
         }))
        navigate('/')
         
       }else{
-        setError(userData.data.error)
+        setError(userData.error)
         
       }
     } catch (error) {

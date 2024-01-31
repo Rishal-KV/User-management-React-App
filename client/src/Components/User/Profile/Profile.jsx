@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { updateApi } from '../../../Api/UserApi';
 import { setUserDetails } from '../../../Store/slice/UserSlice';
@@ -7,6 +7,7 @@ import NavBar from '../NavBar/NavBar';
 function Profile() {
     const emailPattern =  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
+   
 
     const oldData = useSelector((state) => state.user);
     console.log(oldData);
@@ -19,13 +20,23 @@ function Profile() {
         phone: oldData.phone || "",
         image: oldData.image || ""
     };
-
+console.log(initialState);
     const [userData, setUserData] = useState(initialState);
     const [error,setError] = useState("")
+    const [imagePreview, setImagePreview] = useState(userData.image ? `public/uploads/${userData.image}` : "");
+
+    function handleImageChange(e){
+        let file = e.target.files[0];
+        if (file) {
+            setUserData({ ...userData, image: file });
+            setImagePreview(URL.createObjectURL(file));
+        }
+    }
 
     function editProfile(e) {
         e.preventDefault();
         updateApi(userData).then((data) => {
+            console.log(data);
 
             if(!emailPattern.test(userData.email)){
                 return  setError("Invalid email format")
@@ -35,15 +46,15 @@ function Profile() {
                 return setError("Phone must contain 10 digits")
             }
              dispatch(setUserDetails({
-                id : data.data.updatedData.name,
-                name : data.data.updatedData.name,
+                id : data.data.updatedData._id,
+                userName : data.data.updatedData.name,
                 email : data.data.updatedData.email,
                 image : data.data.updatedData.image,
-                phone : data.data.updatedData.phone,
+                phone : data.data.updatedData.number,
                 is_Admin : data.data.updatedData.is_Admin
                
              }))
-              nagivate('/dashboard')
+              nagivate('/')
         });
     }
 
@@ -54,9 +65,9 @@ function Profile() {
             <div className="row">
                 <div className="col-md-3 border-right">
                     <div className="d-flex flex-column align-items-center text-center p-3 py-5">
-                        <img className="rounded-circle mt-5" width="150px" src={userData.image ? `public/uploads/${userData.image}` : "https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg"} alt="Profile" />
-                        <span className="font-weight-bold">{oldData.userName}</span>
-                        <span className="text-black-50">{oldData.email}</span>
+                        <img className="rounded-circle mt-5" width="150px" src={imagePreview ? imagePreview : "https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg"} alt="Profile" />
+                        <span className="font-weight-bold">{userData.userName}</span>
+                        <span className="text-black-50">{userData.email}</span>
                         <span />
                     </div>
                 </div>
@@ -108,7 +119,7 @@ function Profile() {
                                     <input
                                         type="file"
                                         className="form-control col-input"
-                                        onChange={(e) => setUserData({ ...userData, image: e.target.files[0] })}
+                                        onChange={handleImageChange}
                                     />
                                 </div>
                             </div>

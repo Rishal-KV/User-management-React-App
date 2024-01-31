@@ -15,27 +15,28 @@
       users : users,
       
     }
-    useEffect(() => {
-      const fetchUserData = async () => {
-        try {
-          let userData = await userDetails();
-          setSearchList(userData.users);
-          setUsers(userData.users)
-
-        } catch (error) {
+    const fetchUserData = async () => {
+      try {
+        let userData = await userDetails();
+        setSearchList(userData.users);
+        setUsers(userData.users)
         
-          console.error('Error fetching user data:', error);
-        }
-      };
-
+      } catch (error) {
+        
+        console.error('Error fetching user data:', error);
+      }
+    };
+    
+    useEffect(() => {
       fetchUserData();
     }, []); 
 
     const deleteuser = (id) => {
-      deleteUser(id).then((data) => {
-        console.log(data);
+      deleteUser(id).then(() => {
+         
+         fetchUserData()
         
-        setUsers((prevUsers) => prevUsers.filter((user) => user._id !== id));
+        
       });
     };
     return (
@@ -48,7 +49,8 @@
             <tr>
               <th scope="col">ID</th>
               <th scope="col">First name</th>
-              <th scope="col">Last name</th>
+              <th scope="col">Number</th>
+              <th scope='col'>Account created</th>
               <th scope="col">Email</th>
               <th scope="col">Action</th>
             </tr>
@@ -56,9 +58,10 @@
           <tbody>
             {searchList.map((user, index) => (
               <tr key={index}>
-                <th scope="row">{index}</th>
+                <th scope="row">{index + 1}</th>
                 <td>{user.name}</td>
                 <td>{user.number}</td>
+                <td>{user.createdAt}</td>
                 <td>{user.email}</td>
                 <td>
                   <button onClick={()=> navigate(`/admin/edituser/${user._id}`)} className='btn btn-primary mr-2'>edit</button>

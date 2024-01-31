@@ -9,6 +9,7 @@ import { signupApi } from "../../Api/UserApi";
 import { useDispatch } from "react-redux";
 import { setUserDetails } from "../../Store/slice/UserSlice";
 import { useNavigate } from "react-router-dom";
+import toast,{Toaster} from "react-hot-toast";
 
 function Signup() {
   const navigate = useNavigate()
@@ -46,7 +47,8 @@ function Signup() {
        }))
        navigate('/')
     }else{
-      setError(userData.error)
+      toast.error(userData.alert)
+
     }
   }
 
@@ -56,7 +58,10 @@ function Signup() {
   return (
     <div className="flex items-center justify-center h-screen bg-white">
 
-
+<Toaster
+  position="top-center"
+  reverseOrder={false}
+/>
       <Card color="transparent" shadow={false}>
         <Typography variant="h4" color="blue-gray">
           Sign Up

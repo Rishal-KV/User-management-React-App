@@ -20,7 +20,9 @@ const userSlice = createSlice({
       state.image = action.payload.image;
       state.phone = action.payload.phone;
       state.is_Admin = action.payload.is_Admin;
+    
     },
+    
     logoutDetails: (state, action) => {
       state.id = '';
       state.userName = '';

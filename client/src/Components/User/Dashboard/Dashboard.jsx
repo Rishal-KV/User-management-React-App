@@ -1,17 +1,41 @@
 import React, { useEffect, useState } from 'react'
 import '../Dashboard/Dashboard.css'
+import { getUserApi } from '../../../Api/UserApi';
 import { Link } from 'react-router-dom'
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import NavBar from '../NavBar/NavBar';
 function Dashboard() {
+  let dispatch = useDispatch()
     // const userName = (state) => state.user.userName;
-    const username = useSelector((state) => state.user)
-    let [userDetails ,setDetails] = useState({})
-    useEffect(()=>{
-      setDetails(username)
-    },[username])
+    const user = useSelector((state) => state.user)
+    console.log(user.id);
+    const [userDetails, setUserDetails] = useState({});
+   
+
     
-    console.log(userDetails);
+useEffect(() => {
+  const fetchData = async () => {
+      try {
+          const data = await getUserApi(user.id);
+          setUserDetails(data.user);
+
+         await dispatch(setUserDetails({
+              id: data.user._id,
+              userName: data.user.name,
+              phone: data.user.phone,
+              email: data.user.email,
+              image: data.user.image,
+              is_Admin: data.user.is_Admin,
+          }));
+      } catch (error) {
+          console.error("Error fetching user details:", error);
+      }
+  };
+
+  fetchData();
+}, [user.id, dispatch]);
+      
+    
 
   return (
     <div>

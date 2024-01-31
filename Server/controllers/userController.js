@@ -74,8 +74,9 @@ export const login = async (req, res) => {
 export const editprofile = async (req, res) =>{
     try {
         const {id, name, email, phone} = req.body;
+        console.log(name);
         const oldData = await User.findOne({_id:id})
-        console.log(req.file);
+        
         const file = req.file ? req.file.filename : oldData.image
 
           let updatedData = await User.findByIdAndUpdate(id,{
@@ -93,6 +94,18 @@ export const editprofile = async (req, res) =>{
           }
     } catch (error) {
 
+        console.log(error.message);
+    }
+}
+
+export const getDetails = async (req,res) =>{
+    try {
+        const {id} = req.body;
+        console.log(id);
+        let user = await User.findById(id)
+        res.json({user})
+       
+    } catch (error) {
         console.log(error.message);
     }
 }

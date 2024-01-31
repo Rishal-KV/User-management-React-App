@@ -39,9 +39,20 @@ export const updateApi = async ({ name, email, phone, image, id }) => {
             },
             withCredentials: true,
         };
-        let resData = UserApi.post('/update', data, config)
+        let resData = await UserApi.post('/update', data, config)
+        console.log(resData);
         return resData
 
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+export const getUserApi = async (id) =>{
+    console.log(id + "ididi");
+    try {
+        let resData = await UserApi.post('/getdetails',{id})
+        return resData.data
     } catch (error) {
         console.log(error.message);
     }

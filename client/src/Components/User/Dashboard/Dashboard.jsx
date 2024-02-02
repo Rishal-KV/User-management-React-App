@@ -5,21 +5,18 @@ import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux';
 import NavBar from '../NavBar/NavBar';
 function Dashboard() {
-  let dispatch = useDispatch()
+  // let dispatch = useDispatch()
     // const userName = (state) => state.user.userName;
     const user = useSelector((state) => state.user)
     console.log(user.id);
     const [userDetails, setUserDetails] = useState({});
-   
-
-    
-useEffect(() => {
-  const fetchData = async () => {
+    const [counter, setCounter] = useState(0)
+    const fetchData = async () => {
       try {
           const data = await getUserApi(user.id);
           setUserDetails(data.user);
 
-         await dispatch(setUserDetails({
+          dispatch(setUserDetails({
               id: data.user._id,
               userName: data.user.name,
               phone: data.user.phone,
@@ -32,8 +29,21 @@ useEffect(() => {
       }
   };
 
+  useEffect(()=>{
+   const intervalId =  setInterval(()=>{
+      setCounter((counter) => counter + 1)
+    },1000)
+
+    return ()=>{
+      clearInterval(intervalId)
+    }
+  },[counter])
+    
+useEffect(() => {
+ 
+
   fetchData();
-}, [user.id, dispatch]);
+}, []);
       
     
 
@@ -60,7 +70,7 @@ useEffect(() => {
 
               </div>
 
-
+             <h1>{counter}</h1>
               <div class="mt-5 text-center">
 
                 <h4 class="mb-0">{userDetails.email}</h4>

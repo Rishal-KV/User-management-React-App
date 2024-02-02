@@ -86,7 +86,7 @@ export const editprofile = async (req, res) =>{
                 number : phone,
                 image : file
             }
-          })
+          },{new : true})
           if (typeof updatedData == 'object') {
             res.json({updatedData, status : true})
           }else{
